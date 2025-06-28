@@ -1,0 +1,8 @@
+theme = catppuccin-macchiato
+font-thicken
+font-size = 15
+window-decoration = false
+window-width = 9999
+window-height = 9999
+confirm-close-surface = false
+window-colorspace = display-p3 

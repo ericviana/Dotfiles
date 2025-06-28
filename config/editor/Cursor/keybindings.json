@@ -1,0 +1,149 @@
+// Place your key bindings in this file to override the defaults
+[
+  {
+    "key": "tab",
+    "command": "selectNextQuickFix",
+    "when": "editorFocus && quickFixWidgetVisible"
+  },
+  {
+    "key": "tab",
+    "command": "selectPrevQuickFix",
+    "when": "editorFocus && quickFixWidgetVisible"
+  },
+  {
+    "key": "",
+    "command": "selectNextSuggestion",
+    "when": "editorTextFocus && suggestWidgetMultipleSuggestions && suggestWidgetVisible"
+  },
+  {
+    "key": "alt+tab",
+    "command": "selectPrevSuggestion",
+    "when": "editorTextFocus && suggestWidgetMultipleSuggestions && suggestWidgetVisible"
+  },
+  {
+    "key": "tab",
+    "command": "workbench.action.quickOpenSelectNext",
+    "when": "inQuickOpen"
+  },
+  {
+    "key": "alt+tab",
+    "command": "workbench.action.quickOpenSelectPrevious",
+    "when": "inQuickOpen"
+  },
+  {
+    "key": "ctrl+shift+j",
+    "command": "editor.action.copyLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+k",
+    "command": "editor.action.copyLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "editor.action.moveLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "command": "editor.action.moveLinesUpAction",
+    "key": "ctrl+k",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "shift+alt+c",
+    "command": "workbench.files.action.collapseExplorerFolders"
+  },
+  {
+    "key": "cmd+g",
+    "command": "-editor.action.nextMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "shift+cmd+u",
+    "command": "-workbench.action.output.toggleOutput",
+    "when": "workbench.panel.output.active"
+  },
+  {
+    "key": "shift+cmd+u",
+    "command": "git.sync"
+  },
+  {
+    "key": "shift+cmd+e",
+    "command": "workbench.view.explorer",
+    "when": "viewContainer.workbench.view.explorer.enabled"
+  },
+  {
+    "key": "cmd+g",
+    "command": "-workbench.action.terminal.findNext",
+    "when": "terminalFindFocused && terminalHasBeenCreated || terminalFindFocused && terminalProcessSupported || terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+shift+space",
+    "command": "editor.action.inlineSuggest.trigger"
+  },
+  {
+    "key": "shift+cmd+g",
+    "command": "-editor.action.previousMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "shift+cmd+g",
+    "command": "-workbench.action.terminal.findPrevious",
+    "when": "terminalFindFocused && terminalHasBeenCreated || terminalFindFocused && terminalProcessSupported || terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "shift+cmd+g",
+    "command": "workbench.view.scm",
+    "when": "workbench.scm.active"
+  },
+  {
+    "key": "ctrl+shift+g",
+    "command": "-workbench.view.scm",
+    "when": "workbench.scm.active"
+  },
+  {
+    "key": "alt+tab",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorTabMovesFocus"
+  },
+  {
+    "key": "tab",
+    "command": "-editor.action.inlineSuggest.commit",
+    "when": "inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorTabMovesFocus"
+  },
+  {
+    "key": "shift+cmd+i",
+    "command": "inlineChat.start",
+    "when": "inlineChatHasProvider && !editorReadonly"
+  },
+  {
+    "key": "cmd+i",
+    "command": "-inlineChat.start",
+    "when": "inlineChatHasProvider && !editorReadonly"
+  },
+  {
+    "key": "cmd+i",
+    "command": "-github.copilot.terminal.suggestCommand",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "cmd+i",
+    "command": "-inlineChat.start",
+    "when": "editorFocus && inlineChatHasProvider && !editorReadonly"
+  },
+  {
+    "key": "space e",
+    "command": "workbench.view.explorer",
+    "when": "!explorerViewletVisible && vim.active && !inDebugRepl && !inQuickOpen && vim.mode == 'Normal' && editorFocus && !terminalFocus"
+  },
+  {
+    "key": "space e",
+    "command": "workbench.action.toggleSidebarVisibility",
+    "when": "explorerViewletVisible && vim.active && !inDebugRepl && !inQuickOpen && vim.mode == 'Normal' && !terminalFocus"
+  },
+  {
+    "key": "cmd+i",
+    "command": "composerMode.agent"
+  }
+]
