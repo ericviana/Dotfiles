@@ -11,6 +11,9 @@ echo "📁 Checking file structure..."
 [ -d "config/editor/Cursor" ] && echo "✅ Cursor config exists" || echo "❌ Cursor config missing"
 [ -d "config/terminal/ghostty" ] && echo "✅ Ghostty config exists" || echo "❌ Ghostty config missing"
 [ -d "config/terminal/zellij" ] && echo "✅ Zellij config exists" || echo "❌ Zellij config missing"
+[ -d "config/git" ] && echo "✅ Git config exists" || echo "❌ Git config missing"
+[ -f "config/git/.gitconfig" ] && echo "✅ Git config file exists" || echo "❌ Git config file missing"
+[ -f "config/git/.gitignore_global" ] && echo "✅ Global gitignore exists" || echo "❌ Global gitignore missing"
 
 # Check script syntax
 echo ""

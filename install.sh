@@ -4,7 +4,7 @@ set -e
 DOTFILES_DIR="$PWD"
 
 # Symlink dotfiles
-for file in .zshrc .gitconfig; do
+for file in .zshrc; do
   if [ -f "$DOTFILES_DIR/$file" ]; then
     ln -sf "$DOTFILES_DIR/$file" "$HOME/$file"
     echo "Symlinked $file"
@@ -49,6 +49,21 @@ if [ -d "$DOTFILES_DIR/config/terminal/zellij" ]; then
   mkdir -p "$HOME/.config/zellij"
   rsync -a --exclude='.git' "$DOTFILES_DIR/config/terminal/zellij/" "$HOME/.config/zellij/"
   echo "Copied config/terminal/zellij to .config/zellij"
+fi
+
+# Git configuration
+if [ -d "$DOTFILES_DIR/config/git" ]; then
+  # Copy global gitignore
+  if [ -f "$DOTFILES_DIR/config/git/.gitignore_global" ]; then
+    cp "$DOTFILES_DIR/config/git/.gitignore_global" "$HOME/.gitignore_global"
+    echo "Copied .gitignore_global"
+  fi
+  
+  # Copy git config
+  if [ -f "$DOTFILES_DIR/config/git/.gitconfig" ]; then
+    cp "$DOTFILES_DIR/config/git/.gitconfig" "$HOME/.gitconfig"
+    echo "Copied .gitconfig"
+  fi
 fi
 
 # Install Homebrew if not present

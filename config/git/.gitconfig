@@ -1,0 +1,72 @@
+[user]
+    name = Eric Viana
+
+[core]
+    excludesfile = ~/.gitignore_global
+    editor = nvim
+    autocrlf = input
+    filemode = false
+
+[init]
+    defaultBranch = main
+
+[push]
+    default = simple
+    autoSetupRemote = true
+
+[pull]
+    rebase = true
+
+[rebase]
+    autoStash = true
+
+[merge]
+    ff = false
+
+[log]
+    decorate = short
+    abbrevCommit = true
+
+[color]
+    ui = auto
+    branch = auto
+    diff = auto
+    status = auto
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    ca = commit -a
+    cm = commit -m
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    visual = !gitk
+    lg = log --oneline --graph --decorate --all
+    ll = log --oneline --graph --decorate
+    amend = commit --amend --reuse-message=HEAD
+    undo = reset --soft HEAD^
+    cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d"
+
+[diff]
+    tool = vimdiff
+    mnemonicPrefix = true
+
+[merge]
+    tool = vimdiff
+
+[rerere]
+    enabled = true
+
+[help]
+    autocorrect = 1
+
+[credential]
+    helper = osxkeychain
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true 
