@@ -29,3 +29,6 @@ set -o vi
 
 # FZF
 eval "$(fzf --zsh)" 
+
+# bun completions
+[ -s "/Users/eric/.bun/_bun" ] && source "/Users/eric/.bun/_bun"
