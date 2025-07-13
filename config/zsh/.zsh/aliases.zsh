@@ -1,7 +1,7 @@
 # Config aliases
 alias zshconfig="nvim ~/.zshrc"
-alias vimconfig="vim ~/.config/nvim"
-alias zellijconfig="vim ~/.config/zellij"
+alias vimconfig="nvim ~/.config/nvim"
+alias zellijconfig="nvim ~/.config/zellij"
 
 # Git aliases
 alias gcpb='git checkout -'
