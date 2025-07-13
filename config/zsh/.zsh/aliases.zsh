@@ -8,7 +8,6 @@ alias gcpb='git checkout -'
 alias gce='git commit --amend --no-edit --allow-empty'
 alias gs='git stash'
 alias gsp='git stash pop'
-alias gpo='git pull origin'
 
 # General aliases
 alias xcode="open -a Xcode"
