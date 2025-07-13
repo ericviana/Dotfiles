@@ -16,17 +16,6 @@ alias vim="nvim"
 alias c="clear"
 alias z="zellij"
 
-# Package managers
-alias pd="pnpm dev"
-alias pi="pnpm install"
-alias pb="pnpm build"
-alias nd="npm run dev"
-alias ni="npm install"
-alias nb="npm run build"
-
-# Rust
-alias cr="cargo run"
-
 # Scheduling shortcuts
 alias schedule-mr-daily='schedule "8:30" "mr" "daily"'
 alias schedule-mr-weekdays='schedule "8:30" "mr" "weekdays"'
