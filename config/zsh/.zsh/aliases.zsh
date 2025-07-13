@@ -31,3 +31,6 @@ alias cr="cargo run"
 alias schedule-mr-daily='schedule "8:30" "mr" "daily"'
 alias schedule-mr-weekdays='schedule "8:30" "mr" "weekdays"'
 alias schedule-mr-monday='schedule "8:30" "mr" "monday"' 
+
+# Random
+alias work="z a Blindpay"

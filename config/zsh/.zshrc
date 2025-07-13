@@ -17,6 +17,9 @@ source ~/.zsh/functions.zsh
 source ~/.zsh/paths.zsh
 source ~/.zsh/scheduling.zsh
 
+# Source private environment variables (if file exists)
+[[ -f ~/.zsh/env.private ]] && source ~/.zsh/env.private
+
 # Powerlevel10k
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 

@@ -1,0 +1,12 @@
+# Private environment files
+config/zsh/env.private
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/ 
