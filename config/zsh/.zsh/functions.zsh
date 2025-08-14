@@ -235,3 +235,49 @@ function addalias() {
 
     echo "Alias '$nome_do_alias' sucessfully added!"
 } 
+
+function gco () {
+    local branch="$1"
+    if [ -z "$branch" ]
+    then
+        echo "Usage: gco <branch>"
+        return 1
+    fi
+    if [ "$branch" = "-" ]
+    then
+        if git help -a | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv} -qE '^\s+switch\b'
+        then
+            git switch -
+        else
+            git checkout -
+        fi
+        return $?
+    fi
+    if git rev-parse --verify --quiet "refs/heads/$branch" > /dev/null
+    then
+        if git help -a | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv} -qE '^\s+switch\b'
+        then
+            git switch "$branch"
+        else
+            git checkout "$branch"
+        fi
+        return $?
+    fi
+    if git ls-remote --exit-code --heads origin "$branch" > /dev/null 2>&1
+    then
+        if git help -a | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv} -qE '^\s+switch\b'
+        then
+            git switch --track -c "$branch" "origin/$branch"
+        else
+            git checkout --track -b "$branch" "origin/$branch"
+        fi
+        return $?
+    fi
+    if git help -a | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv} -qE '^\s+switch\b'
+    then
+        git switch -c "$branch"
+    else
+        git checkout -b "$branch"
+    fi
+}
+
