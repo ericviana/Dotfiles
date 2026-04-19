@@ -66,6 +66,19 @@ if [ -d "$DOTFILES_DIR/config/git" ]; then
   fi
 fi
 
+# ph-watcher: per-app ApplePressAndHoldEnabled toggle (macOS)
+if [ -f "$DOTFILES_DIR/config/macos/ph-watcher.swift" ] && command -v swiftc &>/dev/null; then
+  mkdir -p "$HOME/.local/bin"
+  cp "$DOTFILES_DIR/config/macos/ph-watcher.swift" "$HOME/.local/bin/ph-watcher.swift"
+  swiftc -O "$HOME/.local/bin/ph-watcher.swift" -o "$HOME/.local/bin/ph-watcher"
+  mkdir -p "$HOME/Library/LaunchAgents"
+  PLIST="$HOME/Library/LaunchAgents/com.eric.phwatcher.plist"
+  sed "s|__HOME__|$HOME|g" "$DOTFILES_DIR/config/macos/com.eric.phwatcher.plist.template" > "$PLIST"
+  launchctl unload "$PLIST" 2>/dev/null || true
+  launchctl load "$PLIST"
+  echo "Installed ph-watcher LaunchAgent"
+fi
+
 # Install Homebrew if not present
 if ! command -v brew &>/dev/null; then
   echo "Installing Homebrew..."

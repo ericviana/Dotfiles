@@ -109,53 +109,62 @@ function ggm() {
     fi
 }
 
-mr() {
-    ggp
-    # First determine if we should use master or main
-    local base_branch=""
-    if git rev-parse --verify origin/master &>/dev/null; then
-        base_branch="master"
-    elif git rev-parse --verify origin/main &>/dev/null; then
-        base_branch="main"
-    else
-        echo "Error: Could not find master or main branch"
-        return 1
-    fi
-
-    local template_path=".github/pull_request_template.md"
-
-    local pr_template=""
-    if [ -f "$template_path" ]; then
-        pr_template="$(cat "$template_path" | sed 's/"/\\"/g')"
-    fi
-
-    local skip_reviewers=false
-    if [[ "$1" == "nr" ]]; then
-        skip_reviewers=true
-        shift # Remove nr and shift remaining arguments
-    fi
-
-    # If branch specified, use it as base branch
-    if [ -n "$1" ]; then
-        base_branch="$1"
-    fi
-
-    # Fetch the latest changes
-    git fetch origin "$base_branch" &>/dev/null
-
-    if [ "$skip_reviewers" = true ]; then
-        if [ -n "$pr_template" ]; then
-            gh pr create -a @me -f -B "$base_branch" --body "$pr_template"
+mr () {
+        # Determine the base branch (master or main)
+        local base_branch=""
+        if git rev-parse --verify origin/master &> /dev/null
+        then
+                base_branch="master"
+        elif git rev-parse --verify origin/main &> /dev/null
+        then
+                base_branch="main"
         else
-            gh pr create -a @me -f -B "$base_branch"
+                echo "Error: Could not find master or main branch"
+                return 1
         fi
-    else
-        if [ -n "$pr_template" ]; then
-            gh pr create -a @me -f -r "iramons,lfarah" -B "$base_branch" --body "$pr_template"
+        
+        # Load PR template if it exists
+        local template_path=".github/pull_request_template.md"
+        local pr_template=""
+        if [ -f "$template_path" ]
+        then
+                pr_template="$(cat "$template_path" | sed 's/"/\\"/g')"
+        fi
+        
+        # Check if "nr" (no reviewers) flag is passed
+        local skip_reviewers=false
+        if [[ "$1" == "nr" ]]
+        then
+                skip_reviewers=true
+                shift
+        fi
+        
+        # Allow overriding base branch with argument
+        if [ -n "$1" ]
+        then
+                base_branch="$1"
+        fi
+        
+        # Fetch the latest changes from the base branch
+        git fetch origin "$base_branch" &> /dev/null
+        
+        # Create PR with or without reviewers, always targeting blindpaylabs/www
+        if [ "$skip_reviewers" = true ]
+        then
+                if [ -n "$pr_template" ]
+                then
+                        gh pr create -a @me -f -B "$base_branch" --repo blindpaylabs/www --body "$pr_template"
+                else
+                        gh pr create -a @me -f -B "$base_branch" --repo blindpaylabs/www
+                fi
         else
-            gh pr create -a @me -f -r "iramons,lfarah" -B "$base_branch"
+                if [ -n "$pr_template" ]
+                then
+                        gh pr create -a @me -f -r "alvseven,mrarticuno,BernardoSM" -B "$base_branch" --repo blindpaylabs/www --body "$pr_template"
+                else
+                        gh pr create -a @me -f -r "alvseven,mrarticuno,BernardoSM" -B "$base_branch" --repo blindpaylabs/www
+                fi
         fi
-    fi
 }
 
 function copy_diff() {
@@ -180,25 +189,40 @@ function copy_tree() {
 }
 
 # macOS functions
+# `ph` manages a background watcher (LaunchAgent) that flips the global
+# ApplePressAndHoldEnabled pref as apps activate, so Cursor gets key repeat
+# while Slack/Dia/Raycast/etc. get the accent menu. Per-app defaults don't
+# work for Electron apps — this is the workaround.
 function ph() {
-    # Get current setting (returns "1" for true, "0" for false)
-    current_setting=$(defaults read -g ApplePressAndHoldEnabled 2>/dev/null)
-    
-    # Handle case where setting doesn't exist yet
-    if [ -z "$current_setting" ]; then
-        current_setting=1  # Assume it's enabled by default
-    fi
-    
-    # Toggle the setting
-    if [ "$current_setting" -eq 1 ]; then
-        defaults write -g ApplePressAndHoldEnabled -bool false
-        echo "Global press-and-hold disabled"
-    else
-        defaults write -g ApplePressAndHoldEnabled -bool true
-        echo "Global press-and-hold enabled"
-    fi
-    
-    echo "Restart applications for this to have an effect"
+    local label="com.eric.phwatcher"
+    local plist="$HOME/Library/LaunchAgents/${label}.plist"
+    local script="$HOME/.local/bin/ph-watcher.swift"
+
+    case "${1:-status}" in
+        status)
+            if launchctl list | grep -q "$label"; then
+                echo "watcher: running"
+            else
+                echo "watcher: not running — run 'ph reload'"
+            fi
+            echo "global: $(defaults read -g ApplePressAndHoldEnabled 2>/dev/null || echo unset)"
+            echo "log:    tail -f /tmp/ph-watcher.log"
+            ;;
+        reload|install)
+            [[ -f "$script" && -f "$plist" ]] || { echo "missing $script or $plist" >&2; return 1; }
+            swiftc -O "$script" -o "${script%.swift}" || { echo "compile failed" >&2; return 1; }
+            launchctl unload "$plist" 2>/dev/null
+            launchctl load "$plist"
+            echo "watcher compiled and loaded."
+            ;;
+        uninstall|stop)
+            launchctl unload "$plist" 2>/dev/null
+            echo "watcher stopped."
+            ;;
+        *)
+            echo "usage: ph [status|reload|uninstall]"
+            ;;
+    esac
 }
 
 function oc() { 
@@ -236,48 +260,91 @@ function addalias() {
     echo "Alias '$nome_do_alias' sucessfully added!"
 } 
 
-function gco () {
-    local branch="$1"
-    if [ -z "$branch" ]
-    then
-        echo "Usage: gco <branch>"
-        return 1
-    fi
-    if [ "$branch" = "-" ]
-    then
-        if git help -a | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv} -qE '^\s+switch\b'
-        then
-            git switch -
-        else
-            git checkout -
-        fi
-        return $?
-    fi
-    if git rev-parse --verify --quiet "refs/heads/$branch" > /dev/null
-    then
-        if git help -a | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv} -qE '^\s+switch\b'
-        then
-            git switch "$branch"
-        else
-            git checkout "$branch"
-        fi
-        return $?
-    fi
-    if git ls-remote --exit-code --heads origin "$branch" > /dev/null 2>&1
-    then
-        if git help -a | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv} -qE '^\s+switch\b'
-        then
-            git switch --track -c "$branch" "origin/$branch"
-        else
-            git checkout --track -b "$branch" "origin/$branch"
-        fi
-        return $?
-    fi
-    if git help -a | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv} -qE '^\s+switch\b'
-    then
-        git switch -c "$branch"
+function mkcdir () {
+    mkdir -p -- "$1" && cd -P -- "$1"
+}
+
+# Override OMZ's gco alias with our function
+
+source $ZSH/oh-my-zsh.sh
+
+unalias gco 2>/dev/null || true
+
+# gco <branch>: switch if exists; track remote if exists; else create new
+gco() {
+  local branch="$1"
+  if [ -z "$branch" ]; then
+    echo "Usage: gco <branch>"
+    return 1
+  fi
+
+  # Support "previous branch" shortcut
+  if [ "$branch" = "-" ]; then
+    if git help -a | grep -qE '^\s+switch\b'; then
+      git switch -
     else
-        git checkout -b "$branch"
+      git checkout -
     fi
+    return $?
+  fi
+
+  # Local branch exists?
+  if git rev-parse --verify --quiet "refs/heads/$branch" >/dev/null; then
+    if git help -a | grep -qE '^\s+switch\b'; then
+      git switch "$branch"
+    else
+      git checkout "$branch"
+    fi
+    return $?
+  fi
+
+  # Remote branch (origin) exists?
+  if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+    if git help -a | grep -qE '^\s+switch\b'; then
+      git switch --track -c "$branch" "origin/$branch"
+    else
+      git checkout --track -b "$branch" "origin/$branch"
+    fi
+    return $?
+  fi
+
+  # Otherwise create a new branch from current HEAD
+  if git help -a | grep -qE '^\s+switch\b'; then
+    git switch -c "$branch"
+  else
+    git checkout -b "$branch"
+  fi
+}
+
+copy() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: copy <file>"
+    return 1
+  fi
+
+  if [[ ! -f "$1" ]]; then
+    echo "Error: '$1' is not a file or does not exist"
+    return 1
+  fi
+
+  if [[ ! -r "$1" ]]; then
+    echo "Error: '$1' is not readable"
+    return 1
+  fi
+
+  if command -v pbcopy &>/dev/null; then
+    pbcopy < "$1"
+  elif command -v xclip &>/dev/null; then
+    xclip -selection clipboard < "$1"
+  elif command -v xsel &>/dev/null; then
+    xsel --clipboard --input < "$1"
+  elif command -v wl-copy &>/dev/null; then
+    wl-copy < "$1"
+  else
+    echo "Error: no clipboard utility found (pbcopy, xclip, xsel, wl-copy)"
+    return 1
+  fi
+
+  echo "✓ Copied '${1}' to clipboard"
 }
 
